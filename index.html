@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生学习互助小组配对系统</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Serif SC', 'Times New Roman', Georgia, serif;
+        }
+        body {
+            background-color: #fff;
+            padding: 40px 20px;
+            color: #000;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-top: 4px double #000;
+            border-bottom: 1px solid #000;
+        }
+        h1, h2, h3 {
+            text-align: center;
+            color: #000;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        h1 {
+            font-size: 42px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #000;
+            padding-bottom: 20px;
+        }
+        h2 {
+            font-size: 28px;
+            margin: 40px 0 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .date-picker {
+            text-align: center;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+        .date-picker input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            font-family: inherit;
+            width: 200px;
+            text-align: center;
+            background-color: #fff;
+            transition: border-color 0.3s;
+        }
+        .date-picker input:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+        .date-picker label {
+            margin-right: 10px;
+            color: #333;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            border: 1px solid #eee;
+        }
+        button {
+            background-color: #000;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            background-color: #333;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .btn-save {
+            background-color: #000;
+            border: 1px solid #000;
+        }
+        .btn-save:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        .btn-cancel {
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #000;
+        }
+        .btn-cancel:hover {
+            background-color: #f0f0f0;
+        }
+        .editing-notice {
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #000;
+            font-weight: bold;
+            font-style: italic;
+        }
+        .edit-btn {
+            background: none;
+            border: none;
+            color: #000;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .edit-btn:hover {
+            color: #555;
+        }
+        .pairs-container {
+            margin-top: 40px;
+        }
+        .pair-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 30px;
+        }
+        .pair-card {
+            border: 1px solid #ddd;
+            padding: 25px;
+            background-color: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+        .pair-header {
+            color: #000;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 18px;
+            border-bottom: 1px solid #000;
+        }
+        .student {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fafafa;
+            border-left: 3px solid #ddd;
+        }
+        .score-input {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            font-size: 16px;
+            background-color: #fff;
+            transition: border-color 0.3s;
+        }
+        .score-input:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+        .total-score {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: right;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #f8f9fa;
+            color: #155724;
+            border-left: 4px solid #155724;
+        }
+        .error {
+            background-color: #f8f9fa;
+            color: #721c24;
+            border-left: 4px solid #721c24;
+        }
+        .info {
+            background-color: #f8f9fa;
+            color: #0c5460;
+            border-left: 4px solid #0c5460;
+        }
+        .hide {
+            display: none;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+            margin: 0 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+        .tab.active {
+            border-bottom: 2px solid #000;
+            color: #000;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            margin: 30px 0;
+            font-size: 15px;
+        }
+        th, td {
+            border: none;
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #fff;
+            color: #000;
+            font-weight: bold;
+            border-bottom: 2px solid #000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+        tr {
+            border-bottom: 1px solid #eee;
+        }
+        tr:last-child {
+            border-bottom: none;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        .history-section {
+            margin-top: 40px;
+        }
+        .meta-info {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 20px;
+            color: #666;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        #daily-summary-table th {
+            min-width: 100px;
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 10;
+        }
+        #daily-summary-table th:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 11;
+            background-color: #fff;
+        }
+        @media (max-width: 768px) {
+            .pair-grid {
+                grid-template-columns: 1fr;
+            }
+            .tab {
+                padding: 10px 15px;
+                font-size: 12px;
+            }
+            body {
+                padding: 20px 10px;
+            }
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 32px;
+            }
+            h2 {
+                font-size: 24px;
+            }
+        }
+        .btn-edit {
+            background-color: #333;
+            color: white;
+            border: 1px solid #333;
+        }
+        .btn-edit:hover {
+            background-color: #555;
+        }
+        #password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .password-container {
+            width: 300px;
+            padding: 30px;
+            background-color: #fff;
+            border: 1px solid #000;
+            text-align: center;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            border-top: 4px double #000;
+            border-bottom: 1px solid #000;
+        }
+        
+        .password-container h2 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            border-top: none;
+            padding-top: 0;
+            font-size: 24px;
+            letter-spacing: 0.5px;
+        }
+        
+        .password-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            font-size: 16px;
+            text-align: center;
+            background-color: #fff;
+            transition: border-color 0.3s;
+        }
+        
+        .password-container input:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .password-container button {
+            width: 100%;
+            background-color: #000;
+            color: white;
+            border: 1px solid #000;
+            padding: 12px 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .password-container button:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        
+        .password-error {
+            color: #721c24;
+            margin-top: 15px;
+            font-weight: bold;
+            border-left: 4px solid #721c24;
+            padding: 10px;
+            background-color: #f8f9fa;
+            text-align: left;
+        }
+        #edit-password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .edit-password-container {
+            width: 360px;
+            padding: 40px;
+            background-color: #fff;
+            border: 1px solid #000;
+            text-align: center;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            border-top: 4px double #000;
+            border-bottom: 1px solid #000;
+        }
+        
+        .edit-password-container h3 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            border-top: none;
+            padding-top: 0;
+            font-size: 24px;
+            letter-spacing: 0.5px;
+            font-style: normal;
+            text-transform: none;
+            text-align: center;
+        }
+        
+        .edit-password-container input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 25px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            font-size: 16px;
+            text-align: center;
+            background-color: #fff;
+            transition: border-color 0.3s;
+        }
+        
+        .edit-password-container input:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .edit-password-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        
+        .edit-password-container button {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .edit-password-container .btn-confirm {
+            background-color: #000;
+            color: #fff;
+            border: 1px solid #000;
+        }
+        
+        .edit-password-container .btn-confirm:hover {
+            background-color: #333;
+        }
+        
+        .edit-password-container .btn-cancel {
+            background-color: #fff;
+            color: #000;
+        }
+        
+        .edit-password-container .btn-cancel:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div id="password-overlay">
+        <div class="password-container">
+            <h2>请输入密码</h2>
+            <input type="password" id="password-input" placeholder="请输入密码">
+            <button id="submit-password">确认</button>
+            <div id="password-error" class="password-error hide"></div>
+        </div>
+    </div>
+
+    <div id="edit-password-overlay">
+        <div class="edit-password-container">
+            <h3>请输入编辑权限密码</h3>
+            <input type="password" id="edit-password-input" placeholder="请输入编辑密码">
+            <div class="edit-password-buttons">
+                <button id="submit-edit-password" class="btn-confirm">确认</button>
+                <button id="cancel-edit-password" class="btn-cancel">取消</button>
+            </div>
+            <div id="edit-password-error" class="password-error hide"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>学生学习互助小组配对系统</h1>
+        
+        <div class="meta-info">
+            促进学生互相学习，共同进步
+        </div>
+        
+        <div class="date-picker">
+            <label for="current-date">日期：</label>
+            <input type="date" id="current-date">
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="daily-scores">每日评分</div>
+            <div class="tab" data-tab="group-summary">小组总分汇总</div>
+            <div class="tab" data-tab="student-summary">学生总分汇总</div>
+            <div class="tab" data-tab="daily-summary">每日小组得分表</div>
+            <div class="tab" data-tab="history">历史记录</div>
+        </div>
+        
+        <div id="status-message" class="status hide"></div>
+        
+        <div class="tab-content active" id="daily-scores">
+            <div id="pairs-container" class="pairs-container">
+                <div id="pair-grid" class="pair-grid"></div>
+                
+                <div class="btn-container">
+                    <button id="save-btn" class="btn-save">保存今日数据</button>
+                    <button id="save-edit-btn" class="btn-edit hide">保存修改</button>
+                    <button id="cancel-edit-btn" class="btn-cancel hide">取消修改</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="group-summary">
+            <h2>小组总分汇总</h2>
+            <table id="group-table">
+                <thead>
+                    <tr>
+                        <th>小组</th>
+                        <th>指导学生</th>
+                        <th>学习学生</th>
+                        <th>累计总分</th>
+                        <th>平均分</th>
+                    </tr>
+                </thead>
+                <tbody id="group-table-body"></tbody>
+            </table>
+        </div>
+        
+        <div class="tab-content" id="student-summary">
+            <h2>学生总分汇总</h2>
+            <table id="student-table">
+                <thead>
+                    <tr>
+                        <th>学生姓名</th>
+                        <th>初始分数</th>
+                        <th>累计得分</th>
+                        <th>测试次数</th>
+                        <th>平均分</th>
+                        <th>角色</th>
+                    </tr>
+                </thead>
+                <tbody id="student-table-body"></tbody>
+            </table>
+        </div>
+        
+        <div class="tab-content" id="daily-summary">
+            <h2>每日小组得分表</h2>
+            <div class="section">
+                <div class="table-responsive">
+                    <table id="daily-summary-table">
+                        <thead id="daily-summary-head">
+                            <tr>
+                                <th>小组</th>
+                                <!-- 日期列将通过JS动态添加 -->
+                            </tr>
+                        </thead>
+                        <tbody id="daily-summary-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="history">
+            <h2>历史记录</h2>
+            <div class="section history-section">
+                <div id="history-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 密码验证功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const correctPassword = "6264";
+            const passwordOverlay = document.getElementById('password-overlay');
+            const passwordInput = document.getElementById('password-input');
+            const submitPasswordBtn = document.getElementById('submit-password');
+            const passwordError = document.getElementById('password-error');
+            
+            // 编辑权限密码验证相关
+            const correctEditPassword = "6264kdb"; // 修改编辑密码
+            const editPasswordOverlay = document.getElementById('edit-password-overlay');
+            const editPasswordInput = document.getElementById('edit-password-input');
+            const submitEditPasswordBtn = document.getElementById('submit-edit-password');
+            const cancelEditPasswordBtn = document.getElementById('cancel-edit-password');
+            const editPasswordError = document.getElementById('edit-password-error');
+            let hasEditPermission = false;
+            let currentEditDateRequest = null;
+            
+            // 确保初始状态下主内容是隐藏的
+            const container = document.querySelector('.container');
+            container.style.display = 'none';
+            
+            // 移除localStorage验证检查，确保每次都需要输入密码
+            // 清除之前可能存储的验证状态
+            localStorage.removeItem('passwordVerified');
+            
+            // 提交密码事件
+            submitPasswordBtn.addEventListener('click', verifyPassword);
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyPassword();
+                }
+            });
+            
+            function verifyPassword() {
+                if (passwordInput.value === correctPassword) {
+                    passwordOverlay.style.display = 'none';
+                    container.style.display = 'block';
+                    // 不再保存验证状态到localStorage
+                } else {
+                    passwordError.textContent = '密码错误，请重试';
+                    passwordError.classList.remove('hide');
+                    passwordInput.value = '';
+                    setTimeout(() => {
+                        passwordError.classList.add('hide');
+                    }, 3000);
+                }
+            }
+            
+            // 设置当前日期
+            const today = new Date();
+            const dateInput = document.getElementById('current-date');
+            dateInput.value = today.toISOString().split('T')[0];
+            
+            // 添加编辑模式变量
+            let isEditMode = false;
+            let editingDate = null;
+            
+            // 标签页切换功能
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const tabContents = document.querySelectorAll('.tab-content');
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    const targetTab = this.getAttribute('data-tab');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+
+            const pairsContainer = document.getElementById('pairs-container');
+            const pairGrid = document.getElementById('pair-grid');
+            const statusMessage = document.getElementById('status-message');
+            const saveBtn = document.getElementById('save-btn');
+            const groupTableBody = document.getElementById('group-table-body');
+            const studentTableBody = document.getElementById('student-table-body');
+            const historyContainer = document.getElementById('history-container');
+            
+            // 存储所有小组的信息
+            let pairs = [];
+            // 存储历史数据
+            let historyData = JSON.parse(localStorage.getItem('pairHistory')) || {};
+            // 存储学生累计数据
+            let studentData = JSON.parse(localStorage.getItem('studentData')) || {};
+            
+            // 提前定义的学生数据
+            const allStudentsData = `周成 94
+周科函 89
+龙金宏 87
+李晶 87
+包丽彩 77
+代晨曦 75
+李博 69
+张仕海 68
+缪佳辰 67
+刘瑞 66
+付馨孟 65
+杜希 65
+吴蕊 63
+陈煜堞 59
+李凌薇 57
+龙兴骐 56
+黄志辛 53
+孔思靖 52
+沈庭辉 51
+范学森 50
+惠通 49
+刘鹏勋 45
+沈优 42
+王语嫣 42
+崔羽哲 41
+张靖杭暄 40
+卢彦哲 39
+周思燃 39
+孔德煊 37
+许梓睿 36
+魏柔 36
+冉智辉 31
+陈媛 29
+单如意 28
+沈斯 27
+张元博 24
+柳成政 24
+蒋子丹 24
+沈文琪 23
+陈金凤 21
+朱加祺 19
+赵庆烨 18
+缪紫堉 17
+王银 16
+吴开蕊 15
+钱俞蓉 15
+顾晟 14
+刘欧 13
+黄靖雲 12
+缪志贤 11`;
+            
+            // 解析学生数据
+            function parseStudents(text) {
+                const lines = text.trim().split('\n');
+                return lines.filter(line => line.trim() !== '')
+                    .map(line => {
+                        const parts = line.trim().split(/\s+/);
+                        const name = parts[0];
+                        const score = parseFloat(parts[1]) || 0;
+                        return { name, score };
+                    });
+            }
+            
+            // 生成互助小组
+            function generatePairs() {
+                const allStudents = parseStudents(allStudentsData);
+                
+                // 根据成绩排序（从高到低）
+                allStudents.sort((a, b) => b.score - a.score);
+                
+                // 将学生分为四等
+                const totalStudents = allStudents.length;
+                const groupSize = Math.ceil(totalStudents / 4);
+                
+                // 分组
+                const firstTier = allStudents.slice(0, groupSize);
+                const secondTier = allStudents.slice(groupSize, groupSize * 2);
+                const thirdTier = allStudents.slice(groupSize * 2, groupSize * 3);
+                const fourthTier = allStudents.slice(groupSize * 3);
+                
+                // 创建互助对
+                pairs = [];
+                
+                // 成绩一等的教成绩二等的
+                const firstPairs = Math.min(firstTier.length, secondTier.length);
+                for (let i = 0; i < firstPairs; i++) {
+                    pairs.push({
+                        good: firstTier[i],
+                        poor: secondTier[i],
+                        id: pairs.length + 1,
+                        tier: '一-二等'
+                    });
+                }
+                
+                // 成绩三等的教成绩四等的
+                const secondPairs = Math.min(thirdTier.length, fourthTier.length);
+                for (let i = 0; i < secondPairs; i++) {
+                    pairs.push({
+                        good: thirdTier[i],
+                        poor: fourthTier[i],
+                        id: pairs.length + 1,
+                        tier: '三-四等'
+                    });
+                }
+                
+                // 处理剩余未配对的学生
+                let remainingStudents = [];
+                
+                if (firstTier.length > secondTier.length) {
+                    remainingStudents = remainingStudents.concat(firstTier.slice(secondTier.length));
+                } else if (secondTier.length > firstTier.length) {
+                    remainingStudents = remainingStudents.concat(secondTier.slice(firstTier.length));
+                }
+                
+                if (thirdTier.length > fourthTier.length) {
+                    remainingStudents = remainingStudents.concat(thirdTier.slice(fourthTier.length));
+                } else if (fourthTier.length > thirdTier.length) {
+                    remainingStudents = remainingStudents.concat(fourthTier.slice(thirdTier.length));
+                }
+                
+                // 如果有剩余学生，尝试配对
+                if (remainingStudents.length >= 2) {
+                    remainingStudents.sort((a, b) => b.score - a.score);
+                    
+                    for (let i = 0; i < Math.floor(remainingStudents.length / 2); i++) {
+                        pairs.push({
+                            good: remainingStudents[i * 2],
+                            poor: remainingStudents[i * 2 + 1],
+                            id: pairs.length + 1,
+                            tier: '剩余学生'
+                        });
+                    }
+                }
+                
+                // 显示配对结果
+                displayPairs();
+                // 初始化学生数据
+                initializeStudentData();
+                // 更新汇总表
+                updateSummaryTables();
+                // 显示历史记录
+                displayHistory();
+            }
+            
+            // 初始化学生数据
+            function initializeStudentData() {
+                pairs.forEach(pair => {
+                    // 指导学生
+                    if (!studentData[pair.good.name]) {
+                        studentData[pair.good.name] = {
+                            initialScore: pair.good.score,
+                            totalScore: 0,
+                            testCount: 0,
+                            role: '指导学生',
+                            pairId: pair.id
+                        };
+                    }
+                    
+                    // 学习学生
+                    if (!studentData[pair.poor.name]) {
+                        studentData[pair.poor.name] = {
+                            initialScore: pair.poor.score,
+                            totalScore: 0,
+                            testCount: 0,
+                            role: '学习学生',
+                            pairId: pair.id
+                        };
+                    }
+                });
+                
+                localStorage.setItem('studentData', JSON.stringify(studentData));
+            }
+            
+            // 显示配对结果
+            function displayPairs() {
+                pairGrid.innerHTML = '';
+                
+                pairs.forEach(pair => {
+                    const pairCard = document.createElement('div');
+                    pairCard.className = 'pair-card';
+                    
+                    const tierLabel = pair.tier ? `(${pair.tier})` : '';
+                    
+                    pairCard.innerHTML = `
+                        <div class="pair-header">互助小组 ${pair.id} ${tierLabel}</div>
+                        <div class="student">
+                            <div><strong>指导学生：</strong>${pair.good.name} (${pair.good.score}分)</div>
+                            <div>今日得分：<input type="number" class="score-input" data-type="good" data-id="${pair.id}" data-name="${pair.good.name}" min="0" max="100" value="0"></div>
+                        </div>
+                        <div class="student">
+                            <div><strong>学习学生：</strong>${pair.poor.name} (${pair.poor.score}分)</div>
+                            <div>今日得分：<input type="number" class="score-input" data-type="poor" data-id="${pair.id}" data-name="${pair.poor.name}" min="0" max="100" value="0"></div>
+                        </div>
+                        <div class="total-score">小组总分：<span id="total-${pair.id}">0</span></div>
+                    `;
+                    pairGrid.appendChild(pairCard);
+                });
+                
+                // 添加分数监听器
+                document.querySelectorAll('.score-input').forEach(input => {
+                    input.addEventListener('input', updateTotalScore);
+                });
+            }
+            
+            // 更新总分
+            function updateTotalScore() {
+                pairs.forEach(pair => {
+                    const goodInput = document.querySelector(`.score-input[data-type="good"][data-id="${pair.id}"]`);
+                    const poorInput = document.querySelector(`.score-input[data-type="poor"][data-id="${pair.id}"]`);
+                    
+                    const goodScore = parseFloat(goodInput.value) || 0;
+                    const poorScore = parseFloat(poorInput.value) || 0;
+                    
+                    const totalElement = document.getElementById(`total-${pair.id}`);
+                    totalElement.textContent = (goodScore + poorScore).toFixed(1);
+                });
+            }
+            
+            // 显示历史记录
+            function displayHistory() {
+                historyContainer.innerHTML = '';
+                
+                if (Object.keys(historyData).length === 0) {
+                    historyContainer.innerHTML = '<div class="status info">暂无历史记录</div>';
+                    return;
+                }
+                
+                // 按日期降序排序
+                const sortedDates = Object.keys(historyData).sort().reverse();
+                
+                sortedDates.forEach(date => {
+                    const dayData = historyData[date];
+                    const dateDiv = document.createElement('div');
+                    dateDiv.className = 'section';
+                    
+                    // 添加编辑按钮
+                    const headerContent = `<h3>
+                        日期：${date}
+                        <button class="edit-btn" data-date="${date}">修改</button>
+                    </h3>`;
+                    
+                    dateDiv.innerHTML = headerContent;
+                    
+                    const table = document.createElement('table');
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>小组</th>
+                                <th>指导学生</th>
+                                <th>指导学生得分</th>
+                                <th>学习学生</th>
+                                <th>学习学生得分</th>
+                                <th>小组总分</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    `;
+                    
+                    const tbody = table.querySelector('tbody');
+                    
+                    dayData.pairs.forEach(pair => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>小组 ${pair.id}</td>
+                            <td>${pair.good.name}</td>
+                            <td>${pair.good.score}</td>
+                            <td>${pair.poor.name}</td>
+                            <td>${pair.poor.score}</td>
+                            <td>${pair.totalScore.toFixed(1)}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    
+                    dateDiv.appendChild(table);
+                    historyContainer.appendChild(dateDiv);
+                });
+                
+                // 添加编辑按钮事件监听
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const dateToEdit = this.getAttribute('data-date');
+                        if (!hasEditPermission) {
+                            // 没有编辑权限，显示密码输入框
+                            currentEditDateRequest = dateToEdit;
+                            showEditPasswordOverlay();
+                        } else {
+                            // 有编辑权限，直接加载编辑数据
+                            loadDataForEditing(dateToEdit);
+                        }
+                    });
+                });
+            }
+            
+            // 显示编辑密码弹窗
+            function showEditPasswordOverlay() {
+                editPasswordOverlay.style.display = 'flex';
+                editPasswordInput.value = '';
+                editPasswordInput.focus();
+            }
+            
+            // 验证编辑密码
+            function verifyEditPassword() {
+                if (editPasswordInput.value === correctEditPassword) {
+                    hasEditPermission = true;
+                    editPasswordOverlay.style.display = 'none';
+                    
+                    // 启用所有编辑功能
+                    document.querySelectorAll('.score-input').forEach(input => {
+                        input.disabled = false;
+                        input.title = "";
+                    });
+                    
+                    // 隐藏获取权限按钮
+                    document.getElementById('get-edit-permission').style.display = 'none';
+                    
+                    // 显示权限获取成功
+                    showStatus('已获得编辑权限', 'success');
+                    
+                    // 如果是通过修改按钮触发的
+                    if (currentEditDateRequest) {
+                        loadDataForEditing(currentEditDateRequest);
+                        currentEditDateRequest = null;
+                    }
+                } else {
+                    editPasswordError.textContent = '密码错误，无编辑权限';
+                    editPasswordError.classList.remove('hide');
+                    editPasswordInput.value = '';
+                    setTimeout(() => {
+                        editPasswordError.classList.add('hide');
+                    }, 3000);
+                }
+            }
+            
+            // 绑定编辑密码验证事件
+            submitEditPasswordBtn.addEventListener('click', verifyEditPassword);
+            editPasswordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyEditPassword();
+                }
+            });
+            
+            // 取消编辑密码输入
+            cancelEditPasswordBtn.addEventListener('click', function() {
+                editPasswordOverlay.style.display = 'none';
+                currentEditDateRequest = null;
+            });
+            
+            // 添加加载待编辑数据的函数
+            function loadDataForEditing(date) {
+                if (!historyData[date]) {
+                    showStatus('未找到该日期的数据', 'error');
+                    return;
+                }
+                
+                // 设置编辑模式
+                isEditMode = true;
+                editingDate = date;
+                
+                // 更新日期选择器
+                dateInput.value = date;
+                
+                // 在表单前显示正在编辑的提示
+                const editingNotice = document.createElement('div');
+                editingNotice.id = 'editing-notice';
+                editingNotice.className = 'editing-notice';
+                editingNotice.textContent = `正在修改 ${date} 的数据`;
+                
+                const pairsContainer = document.getElementById('pairs-container');
+                if (document.getElementById('editing-notice') === null) {
+                    pairsContainer.insertBefore(editingNotice, pairsContainer.firstChild);
+                }
+                
+                // 填充表单数据
+                const dayData = historyData[date];
+                
+                dayData.pairs.forEach(pair => {
+                    const goodInput = document.querySelector(`.score-input[data-type="good"][data-id="${pair.id}"]`);
+                    const poorInput = document.querySelector(`.score-input[data-type="poor"][data-id="${pair.id}"]`);
+                    
+                    if (goodInput) goodInput.value = pair.good.score;
+                    if (poorInput) poorInput.value = pair.poor.score;
+                });
+                
+                // 更新总分显示
+                updateTotalScore();
+                
+                // 显示保存修改和取消按钮，隐藏普通保存按钮
+                document.getElementById('save-btn').classList.add('hide');
+                document.getElementById('save-edit-btn').classList.remove('hide');
+                document.getElementById('cancel-edit-btn').classList.remove('hide');
+                
+                // 切换到评分标签页
+                document.querySelector('.tab[data-tab="daily-scores"]').click();
+                
+                showStatus(`已加载 ${date} 的数据进行修改`, 'info');
+            }
+            
+            // 保存今日数据
+            function saveDailyData() {
+                if (isEditMode) {
+                    showStatus('您正在编辑模式，请使用"保存修改"按钮', 'error');
+                    return;
+                }
+                
+                if (!hasEditPermission) {
+                    showStatus('您没有编辑权限，请先获取权限', 'error');
+                    return;
+                }
+                
+                const currentDate = dateInput.value;
+                
+                if (!currentDate) {
+                    showStatus('请选择日期', 'error');
+                    return;
+                }
+                
+                const dailyData = {
+                    date: currentDate,
+                    pairs: []
+                };
+                
+                let hasScores = false;
+                
+                // 收集所有输入的分数数据
+                pairs.forEach(pair => {
+                    const goodInput = document.querySelector(`.score-input[data-type="good"][data-id="${pair.id}"]`);
+                    const poorInput = document.querySelector(`.score-input[data-type="poor"][data-id="${pair.id}"]`);
+                    
+                    const goodScore = parseFloat(goodInput.value) || 0;
+                    const poorScore = parseFloat(poorInput.value) || 0;
+                    
+                    if (goodScore > 0 || poorScore > 0) {
+                        hasScores = true;
+                    }
+                    
+                    dailyData.pairs.push({
+                        id: pair.id,
+                        good: {
+                            name: pair.good.name,
+                            score: goodScore
+                        },
+                        poor: {
+                            name: pair.poor.name,
+                            score: poorScore
+                        },
+                        totalScore: goodScore + poorScore
+                    });
+                });
+                
+                if (!hasScores) {
+                    showStatus('请至少输入一个学生的分数', 'error');
+                    return;
+                }
+                
+                // 更新学生数据
+                dailyData.pairs.forEach(pairData => {
+                    if (studentData[pairData.good.name]) {
+                        studentData[pairData.good.name].totalScore += pairData.good.score;
+                        studentData[pairData.good.name].testCount += 1;
+                    }
+                    
+                    if (studentData[pairData.poor.name]) {
+                        studentData[pairData.poor.name].totalScore += pairData.poor.score;
+                        studentData[pairData.poor.name].testCount += 1;
+                    }
+                });
+                
+                // 保存到历史记录
+                historyData[currentDate] = dailyData;
+                localStorage.setItem('pairHistory', JSON.stringify(historyData));
+                localStorage.setItem('studentData', JSON.stringify(studentData));
+                
+                showStatus('数据保存成功！', 'success');
+                
+                // 更新汇总表
+                updateSummaryTables();
+                // 更新历史记录显示
+                displayHistory();
+                
+                // 重置输入框
+                document.querySelectorAll('.score-input').forEach(input => {
+                    input.value = 0;
+                });
+                updateTotalScore();
+            }
+            
+            // 专门用于保存修改的函数
+            function saveEditData() {
+                if (!isEditMode || !editingDate) {
+                    showStatus('未处于编辑模式', 'error');
+                    return;
+                }
+                
+                if (!hasEditPermission) {
+                    showStatus('您没有编辑权限，请先获取权限', 'error');
+                    return;
+                }
+                
+                const currentDate = dateInput.value;
+                
+                if (!currentDate) {
+                    showStatus('请选择日期', 'error');
+                    return;
+                }
+                
+                const dailyData = {
+                    date: currentDate,
+                    pairs: []
+                };
+                
+                let hasScores = false;
+                
+                // 收集所有输入的分数数据
+                pairs.forEach(pair => {
+                    const goodInput = document.querySelector(`.score-input[data-type="good"][data-id="${pair.id}"]`);
+                    const poorInput = document.querySelector(`.score-input[data-type="poor"][data-id="${pair.id}"]`);
+                    
+                    const goodScore = parseFloat(goodInput.value) || 0;
+                    const poorScore = parseFloat(poorInput.value) || 0;
+                    
+                    if (goodScore > 0 || poorScore > 0) {
+                        hasScores = true;
+                    }
+                    
+                    dailyData.pairs.push({
+                        id: pair.id,
+                        good: {
+                            name: pair.good.name,
+                            score: goodScore
+                        },
+                        poor: {
+                            name: pair.poor.name,
+                            score: poorScore
+                        },
+                        totalScore: goodScore + poorScore
+                    });
+                });
+                
+                if (!hasScores) {
+                    showStatus('请至少输入一个学生的分数', 'error');
+                    return;
+                }
+                
+                try {
+                    // 获取旧数据，减去之前的分数
+                    const oldData = historyData[editingDate];
+                    if (oldData) {
+                        oldData.pairs.forEach(oldPair => {
+                            if (studentData[oldPair.good.name]) {
+                                studentData[oldPair.good.name].totalScore -= oldPair.good.score;
+                                // 只有当测试次数大于0时才减少，避免负值
+                                if (studentData[oldPair.good.name].testCount > 0) {
+                                    studentData[oldPair.good.name].testCount -= 1;
+                                }
+                            }
+                            
+                            if (studentData[oldPair.poor.name]) {
+                                studentData[oldPair.poor.name].totalScore -= oldPair.poor.score;
+                                // 只有当测试次数大于0时才减少，避免负值
+                                if (studentData[oldPair.poor.name].testCount > 0) {
+                                    studentData[oldPair.poor.name].testCount -= 1;
+                                }
+                            }
+                        });
+                    }
+                    
+                    // 删除旧数据
+                    if (editingDate !== currentDate) {
+                        delete historyData[editingDate];
+                    }
+                    
+                    // 更新学生数据
+                    dailyData.pairs.forEach(pairData => {
+                        if (studentData[pairData.good.name]) {
+                            studentData[pairData.good.name].totalScore += pairData.good.score;
+                            studentData[pairData.good.name].testCount += 1;
+                        }
+                        
+                        if (studentData[pairData.poor.name]) {
+                            studentData[pairData.poor.name].totalScore += pairData.poor.score;
+                            studentData[pairData.poor.name].testCount += 1;
+                        }
+                    });
+                    
+                    // 保存到历史记录
+                    historyData[currentDate] = dailyData;
+                    localStorage.setItem('pairHistory', JSON.stringify(historyData));
+                    localStorage.setItem('studentData', JSON.stringify(studentData));
+                    
+                    showStatus('修改数据保存成功！', 'success');
+                    
+                    // 更新汇总表
+                    updateSummaryTables();
+                    
+                    // 更新历史记录显示
+                    displayHistory();
+                    
+                    // 退出编辑模式
+                    exitEditMode();
+                } catch (error) {
+                    console.error('保存修改时出错:', error);
+                    showStatus('保存失败，请重试', 'error');
+                }
+            }
+            
+            // 添加退出编辑模式的函数
+            function exitEditMode() {
+                if (!isEditMode) return;
+                
+                isEditMode = false;
+                editingDate = null;
+                
+                // 移除编辑提示
+                const editingNotice = document.getElementById('editing-notice');
+                if (editingNotice) {
+                    editingNotice.remove();
+                }
+                
+                // 隐藏编辑相关按钮，显示普通保存按钮
+                document.getElementById('save-btn').classList.remove('hide');
+                document.getElementById('save-edit-btn').classList.add('hide');
+                document.getElementById('cancel-edit-btn').classList.add('hide');
+                
+                // 重置日期为今天
+                dateInput.value = new Date().toISOString().split('T')[0];
+                
+                // 重置表单
+                document.querySelectorAll('.score-input').forEach(input => {
+                    input.value = 0;
+                });
+                updateTotalScore();
+            }
+            
+            // 事件监听器
+            saveBtn.addEventListener('click', saveDailyData);
+            document.getElementById('save-edit-btn').addEventListener('click', saveEditData);
+            document.getElementById('cancel-edit-btn').addEventListener('click', function() {
+                exitEditMode();
+                showStatus('已取消修改', 'info');
+            });
+            
+            // 更新汇总表
+            function updateSummaryTables() {
+                updateGroupTable();
+                updateStudentTable();
+                updateDailySummaryTable();
+            }
+            
+            // 更新小组汇总表
+            function updateGroupTable() {
+                groupTableBody.innerHTML = '';
+                
+                // 计算每个小组的累计分数
+                const groupTotals = {};
+                
+                // 初始化小组累计数据
+                pairs.forEach(pair => {
+                    groupTotals[pair.id] = {
+                        goodName: pair.good.name,
+                        poorName: pair.poor.name,
+                        totalScore: 0,
+                        testCount: 0
+                    };
+                });
+                
+                // 累计历史数据中的分数
+                Object.values(historyData).forEach(day => {
+                    day.pairs.forEach(pair => {
+                        if (groupTotals[pair.id]) {
+                            groupTotals[pair.id].totalScore += pair.totalScore;
+                            groupTotals[pair.id].testCount += 1;
+                        }
+                    });
+                });
+                
+                // 将小组转换为数组并按累计总分从高到低排序
+                const sortedGroups = Object.entries(groupTotals)
+                    .map(([id, data]) => ({
+                        id, 
+                        ...data
+                    }))
+                    .sort((a, b) => b.totalScore - a.totalScore);
+                
+                // 填充表格
+                sortedGroups.forEach(group => {
+                    const row = document.createElement('tr');
+                    
+                    const averageScore = group.testCount > 0 ? (group.totalScore / group.testCount).toFixed(1) : '0.0';
+                    
+                    row.innerHTML = `
+                        <td>小组 ${group.id}</td>
+                        <td>${group.goodName}</td>
+                        <td>${group.poorName}</td>
+                        <td>${group.totalScore.toFixed(1)}</td>
+                        <td>${averageScore}</td>
+                    `;
+                    
+                    groupTableBody.appendChild(row);
+                });
+            }
+            
+            // 更新学生汇总表
+            function updateStudentTable() {
+                studentTableBody.innerHTML = '';
+                
+                // 将学生数据转换为数组
+                const studentsArray = Object.entries(studentData).map(([name, data]) => ({
+                    name,
+                    ...data
+                }));
+                
+                // 按累计得分从高到低排序
+                studentsArray.sort((a, b) => b.totalScore - a.totalScore);
+                
+                // 填充表格
+                studentsArray.forEach(student => {
+                    const row = document.createElement('tr');
+                    
+                    const averageScore = student.testCount > 0 ? (student.totalScore / student.testCount).toFixed(1) : '0.0';
+                    
+                    row.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>${student.initialScore}</td>
+                        <td>${student.totalScore.toFixed(1)}</td>
+                        <td>${student.testCount}</td>
+                        <td>${averageScore}</td>
+                        <td>${student.role}</td>
+                    `;
+                    
+                    studentTableBody.appendChild(row);
+                });
+            }
+            
+            // 更新每日小组得分表
+            function updateDailySummaryTable() {
+                // 清空表头和表体
+                const dailySummaryHead = document.getElementById('daily-summary-head').querySelector('tr');
+                const dailySummaryBody = document.getElementById('daily-summary-body');
+                
+                while (dailySummaryHead.children.length > 1) {
+                    dailySummaryHead.removeChild(dailySummaryHead.lastChild);
+                }
+                
+                dailySummaryBody.innerHTML = '';
+                
+                if (Object.keys(historyData).length === 0) {
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.innerHTML = '<td colspan="2" class="text-center">暂无数据</td>';
+                    dailySummaryBody.appendChild(emptyRow);
+                    return;
+                }
+                
+                // 获取所有日期并排序
+                const dates = Object.keys(historyData).sort();
+                
+                // 添加日期表头
+                dates.forEach(date => {
+                    const th = document.createElement('th');
+                    th.textContent = date;
+                    dailySummaryHead.appendChild(th);
+                });
+                
+                // 获取所有小组ID
+                const groupIds = [];
+                Object.values(historyData).forEach(day => {
+                    day.pairs.forEach(pair => {
+                        if (!groupIds.includes(pair.id)) {
+                            groupIds.push(pair.id);
+                        }
+                    });
+                });
+                
+                groupIds.sort((a, b) => a - b);
+                
+                // 为每个小组创建一行
+                groupIds.forEach(groupId => {
+                    const row = document.createElement('tr');
+                    
+                    // 添加小组列
+                    const groupCell = document.createElement('td');
+                    groupCell.textContent = `小组 ${groupId}`;
+                    row.appendChild(groupCell);
+                    
+                    // 添加每天的分数
+                    dates.forEach(date => {
+                        const scoreCell = document.createElement('td');
+                        const dayData = historyData[date];
+                        const pairData = dayData.pairs.find(p => p.id === groupId);
+                        
+                        if (pairData) {
+                            scoreCell.textContent = pairData.totalScore.toFixed(1);
+                        } else {
+                            scoreCell.textContent = '-';
+                        }
+                        
+                        row.appendChild(scoreCell);
+                    });
+                    
+                    dailySummaryBody.appendChild(row);
+                });
+            }
+            
+            // 初始化
+            function initialize() {
+                generatePairs();
+                
+                // 禁用所有编辑相关按钮，直到获得编辑权限
+                document.getElementById('save-btn').addEventListener('click', function(e) {
+                    if (!hasEditPermission) {
+                        e.preventDefault();
+                        showStatus('您没有编辑权限，请先获取权限', 'error');
+                        return false;
+                    }
+                    saveDailyData();
+                });
+                
+                // 禁用分数输入框
+                document.querySelectorAll('.score-input').forEach(input => {
+                    input.disabled = true;
+                    input.title = "需要编辑权限才能修改分数";
+                });
+                
+                // 添加获取编辑权限的按钮
+                const editPermBtn = document.createElement('button');
+                editPermBtn.textContent = "获取编辑权限";
+                editPermBtn.className = "btn-edit";
+                editPermBtn.id = "get-edit-permission";
+                editPermBtn.style.marginBottom = "20px";
+                document.querySelector('.date-picker').appendChild(editPermBtn);
+                
+                // 绑定获取编辑权限事件
+                document.getElementById('get-edit-permission').addEventListener('click', function() {
+                    showEditPasswordOverlay();
+                });
+            }
+            
+            initialize();
+        });
+    </script>
+</body>
+</html>
